@@ -1,0 +1,31 @@
+version: "3.1"
+
+volumes:
+    db-data:
+
+services:
+
+    django:
+      build: ./docker
+      container_name: ${PROJECT_NAME}-django
+      command: python3 manage.py runserver 0.0.0.0:8000
+      volumes:
+        - .:/application
+      ports:
+        - "8000:8000"
+      depends_on:
+        - mysql
+
+    mysql:
+      image: ${MYSQL_VERSION}
+      container_name: ${PROJECT_NAME}-mysql
+      working_dir: /application
+      volumes:
+        - db-data:/application
+      environment:
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      ports:
+        - "8306:3306"
